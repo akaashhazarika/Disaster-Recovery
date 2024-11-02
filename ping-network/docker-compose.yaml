@@ -1,0 +1,44 @@
+# docker-compose.yaml
+services:
+  client:
+    build: 
+      context: ./client
+    container_name: ping-client
+    networks:
+      - ping-network
+    depends_on:
+      - server
+
+  server:
+    build: 
+      context: ./server
+    container_name: ping-server
+    networks:
+      - ping-network
+    dns_search: .ping-network
+
+  replica1:
+    build: 
+      context: ./replica
+      args:
+        REPLICA_ID: "replica-1"
+    container_name: replica-1
+    networks:
+      - ping-network
+    depends_on:
+      - server
+
+  replica2:
+    build:
+      context: ./replica
+      args:
+        REPLICA_ID: "replica-2"
+    container_name: replica-2
+    networks:
+      - ping-network
+    depends_on:
+      - server
+
+networks:
+  ping-network:
+    driver: bridge
